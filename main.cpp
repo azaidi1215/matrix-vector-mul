@@ -1,10 +1,11 @@
 #include <cassert>
+#include <chrono>
 #include <iostream>
 #include <thread>
 #include <vector>
 #include "functions.h"
 
-const int ROWS = 23, COLS = 35;
+const int ROWS = 150, COLS = 300;
 const int THREADS_TO_USE = 2;
 
 void test_by_rows() {
@@ -17,12 +18,13 @@ void test_by_rows() {
     srand(time(0));
     init_matrix(matrix);
     init_vector(vector);
-    print_matrix(matrix);
-    print_vector(vector);
+//    print_matrix(matrix);
+//    print_vector(vector);
 
     std::vector<std::thread *> threads;
     int rows_per_thread = ROWS / THREADS_TO_USE;
 
+    auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ROWS; i += rows_per_thread) {
 
         if (i + 2 * rows_per_thread > ROWS) {
@@ -39,8 +41,13 @@ void test_by_rows() {
     for (int j = 0; j < THREADS_TO_USE; j++) {
         threads[j]->join();
     }
+    auto end = std::chrono::high_resolution_clock::now();
 
-    print_vector(result_vector);
+//    print_vector(result_vector);
+    double timeTakenInSeconds = (end - start).count()
+                                * ((double) std::chrono::high_resolution_clock::period::num
+                                   / std::chrono::high_resolution_clock::period::den);
+    printf("Time, s: %lf", timeTakenInSeconds);
 
     for (int h = 0; h < THREADS_TO_USE; h++) {
         delete threads[h];
@@ -58,12 +65,13 @@ void test_by_cols() {
     srand(time(0));
     init_matrix(matrix_by_cols);
     init_vector(vector);
-    print_matrix(matrix_by_cols, true);
+//    print_matrix(matrix_by_cols, true);
     print_vector(vector);
 
     std::vector<std::thread *> threads;
     int cols_per_thread = COLS / THREADS_TO_USE;
 
+    auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < COLS; i += cols_per_thread) {
         if (i + 2 * cols_per_thread > COLS) {
             cols_per_thread = COLS - i;
@@ -84,8 +92,13 @@ void test_by_cols() {
             result_vector[k] += sub_results[l][k];
         }
     }
+    auto end = std::chrono::high_resolution_clock::now();
 
-    print_vector(result_vector);
+//    print_vector(result_vector);
+    double timeTakenInSeconds = (end - start).count()
+                                * ((double) std::chrono::high_resolution_clock::period::num
+                                   / std::chrono::high_resolution_clock::period::den);
+    printf("Time, s: %lf", timeTakenInSeconds);
 
     for (int h = 0; h < THREADS_TO_USE; h++) {
         delete threads[h];
@@ -93,7 +106,8 @@ void test_by_cols() {
 }
 
 int main() {
-    test_by_rows();
+//    test_by_rows();
+    test_by_cols();
 
     return 0;
 }
